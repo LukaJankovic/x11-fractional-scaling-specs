@@ -13,7 +13,7 @@
 
 Name:           gnome-control-center
 Version:        40.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Utilities to configure the GNOME desktop
 
 License:        GPLv2+ and CC-BY-SA
