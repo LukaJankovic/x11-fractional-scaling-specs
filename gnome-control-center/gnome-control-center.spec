@@ -17,7 +17,7 @@ Release:        1%{?dist}.xscale
 Summary:        Utilities to configure the GNOME desktop
 
 License:        GPLv2+ and CC-BY-SA
-URL:            http://www.gnome.org
+URL:            https://www.gnome.org
 Source0:        https://download.gnome.org/sources/gnome-control-center/40/gnome-control-center-%{tarball_version}.tar.xz
 
 # https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/965
