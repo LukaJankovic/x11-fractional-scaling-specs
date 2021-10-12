@@ -4,18 +4,18 @@
 %global json_glib_version 0.12.0
 %global libinput_version 1.4
 %global pipewire_version 0.3.0
-%global mutter_api_version 9
+%global mutter_api_version 8
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:          mutter
-Version:       41.0
-Release:       3%{?dist}.xscale
+Version:       40.5
+Release:       2%{?dist}.xscale
 Summary:       Window and compositing manager based on Clutter
 
 License:       GPLv2+
 URL:           http://www.gnome.org
-Source0:       http://download.gnome.org/sources/%{name}/41/%{name}-%{tarball_version}.tar.xz
+Source0:       http://download.gnome.org/sources/%{name}/40/%{name}-%{tarball_version}.tar.xz
 
 # Work-around for OpenJDK's compliance test
 Patch0:        0001-window-actor-Special-case-shaped-Java-windows.patch
@@ -27,13 +27,14 @@ Patch1:        0001-Revert-build-Do-not-provide-built-sources-as-libmutt.patch
 Patch2:        0001-Test-deny-atomic-KMS-for-tegra-RHBZ-1936991.patch
 
 # Block atomic mode setting on virtio to fix cursor offset
-# manually re-diffed on top of "tegra" patch above
+# backported to GNOME 40 branch, rediffed on tegra patch
 # https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/2040
 # https://bugzilla.redhat.com/show_bug.cgi?id=2009304
-Patch3:        0001-kms-impl-device-atomic-Add-virtio_gpu-to-deny-list.patch
+Patch3:        0001-kms-device-Add-virtio_gpu-to-deny-list.patch
 
 Patch4:        0001-x11-Add-support-for-fractional-scaling-using-Randr.patch
 
+BuildRequires: chrpath
 BuildRequires: pango-devel
 BuildRequires: startup-notification-devel
 BuildRequires: gnome-desktop3-devel
@@ -70,12 +71,11 @@ BuildRequires: sysprof-devel
 BuildRequires: systemd-devel
 BuildRequires: upower-devel
 BuildRequires: xorg-x11-server-Xorg
-BuildRequires: xorg-x11-server-Xvfb
 BuildRequires: xkeyboard-config-devel
 BuildRequires: zenity
 BuildRequires: desktop-file-utils
 # Bootstrap requirements
-BuildRequires: gtk-doc gettext-devel git-core
+BuildRequires: gtk-doc gnome-common gettext-devel git
 BuildRequires: libcanberra-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
 BuildRequires: gnome-settings-daemon-devel
@@ -95,14 +95,13 @@ Requires: control-center-filesystem
 Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
 Requires: gnome-settings-daemon
 Requires: gtk3%{?_isa} >= %{gtk3_version}
-Requires: json-glib%{?_isa} >= %{json_glib_version}
-Requires: libinput%{?_isa} >= %{libinput_version}
 Requires: pipewire%{_isa} >= %{pipewire_version}
 Requires: startup-notification
 Requires: dbus
 Requires: zenity
 
-Recommends: mesa-dri-drivers%{?_isa}
+Requires:      json-glib%{?_isa} >= %{json_glib_version}
+Requires:      libinput%{?_isa} >= %{libinput_version}
 
 Provides: firstboot(windowmanager) = mutter
 
@@ -126,8 +125,6 @@ behaviors to meet the needs of the environment.
 %package devel
 Summary: Development package for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
-# for EGL/eglmesaext.h that's included from public cogl-egl-defines.h header
-Requires: mesa-libEGL-devel
 
 %description devel
 Header files and libraries for developing Mutter plugins. Also includes
@@ -156,6 +153,8 @@ the functionality of the installed %{name} package.
 # Mutter contains a .desktop file so we just need to validate it
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
+%ldconfig_scriptlets
+
 %files -f %{name}.lang
 %license COPYING
 %doc NEWS
@@ -167,11 +166,11 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/GConf/gsettings/mutter-schemas.convert
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.mutter.wayland.gschema.xml
+%{_datadir}/glib-2.0/schemas/org.gnome.mutter.x11.gschema.xml
 %{_datadir}/gnome-control-center/keybindings/50-mutter-*.xml
 %{_mandir}/man1/mutter.1*
 %{_udevrulesdir}/61-mutter.rules
 
-%files devel
 %{_includedir}/*
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
@@ -182,38 +181,41 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/mutter-%{mutter_api_version}/tests
 
 %changelog
-* Tue Oct 05 2021 Adam Williamson <awilliam@redhat.com> - 41.0-3
+* Tue Oct 05 2021 Adam Williamson <awilliam@redhat.com> - 40.5-2
 - Backport MR #2040 to fix cursor offset in VMs (#2009304)
 
-* Mon Sep 20 2021 Kalev Lember <klember@redhat.com> - 41.0-2
-- Add missing mesa-libEGL-devel dep to mutter-devel (#2002441)
+* Tue Sep 21 2021 Florian Müllner <fmuellner@redhat.com> - 40.5-1
+- Update to 40.5
 
-* Sun Sep 19 2021 Florian Müllner <fmuellner@redhat.com> - 41.0-1
-- Update to 41.0
-
-* Sun Sep 05 2021 Florian Müllner <fmuellner@redhat.com> - 41~rc
-- Update to 41.rc
-
-* Wed Aug 18 2021 Florian Müllner <fmuellner@redhat.com> - 41~beta
-- Update to 41.beta
-
-* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 40.3-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+* Wed Aug 18 2021 Florian Müllner <fmuellner@redhat.com> - 40.4-1
+- Update to 40.4
 
 * Mon Jul 12 2021 Florian Müllner <fmuellner@redhat.com> - 40.3-1
 - Update to 40.3
 
+* Sat Jul 03 2021 Andrey Brusnik <dev@shdwchn.io> - 40.2.1-2
+- Upstream fix for libwacom tablet mapping to monitor
+
 * Mon Jun 14 2021 Florian Müllner <fmuellner@redhat.com> - 40.2.1-1
 - Update to 40.2.1
+
+* Sun Jun 13 2021 Jonas Ådahl <jadahl@redhat.com> - 40.2-2
+- Fix crash regression
+  Resolves: #1971193
+  Resolves: #1971184
+  Resolves: #1971176
+  Resolves: #1971158
 
 * Thu Jun 10 2021 Florian Müllner <fmuellner@redhat.com> - 40.2-1
 - Update to 40.2
 
+* Tue Jun 01 2021 Jonas Ådahl <jadahl@redhat.com> - 40.1-2
+- Fix broken graphics on radeon (rhbz#1960937)
+- Fix file descriptor leak
+- Fix remote desktop input events
+
 * Thu May 13 2021 Florian Müllner <fmuellner@redhat.com> - 40.1-1
 - Update to 40.1
-
-* Tue Apr 13 2021 Kalev Lember <klember@redhat.com> - 40.0-6
-- Recommend mesa-dri-drivers
 
 * Wed Apr 07 2021 Jonas Ådahl <jadahl@redhat.com> - 40.0-5
 - Fix crash on resume fix regression (rhbz#1946652)

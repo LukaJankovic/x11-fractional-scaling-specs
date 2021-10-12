@@ -12,13 +12,13 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           gnome-control-center
-Version:        41.0
+Version:        40.1
 Release:        1%{?dist}.xscale
 Summary:        Utilities to configure the GNOME desktop
 
 License:        GPLv2+ and CC-BY-SA
 URL:            http://www.gnome.org
-Source0:        https://download.gnome.org/sources/gnome-control-center/41/gnome-control-center-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/gnome-control-center/40/gnome-control-center-%{tarball_version}.tar.xz
 
 # https://gitlab.gnome.org/GNOME/gnome-control-center/-/merge_requests/965
 Patch0:         distro-logo.patch
@@ -40,7 +40,6 @@ BuildRequires:  pkgconfig(cheese-gtk)
 BuildRequires:  pkgconfig(clutter-gtk-1.0)
 BuildRequires:  pkgconfig(colord)
 BuildRequires:  pkgconfig(colord-gtk)
-BuildRequires:  pkgconfig(gcr-3)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
 BuildRequires:  pkgconfig(gdk-wayland-3.0)
 BuildRequires:  pkgconfig(gio-2.0) >= %{glib2_version}
@@ -64,7 +63,6 @@ BuildRequires:  pkgconfig(libpulse-mainloop-glib)
 BuildRequires:  pkgconfig(libsecret-1)
 BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(malcontent-0)
 BuildRequires:  pkgconfig(mm-glib)
 BuildRequires:  pkgconfig(polkit-gobject-1)
 BuildRequires:  pkgconfig(pwquality)
@@ -106,9 +104,6 @@ Requires: dbus
 Requires: glx-utils
 # For the user languages
 Requires: iso-codes
-# For parental controls support
-Requires: malcontent
-Requires: malcontent-control
 # For the network panel
 Recommends: NetworkManager-wifi
 Recommends: nm-connection-editor
@@ -163,7 +158,6 @@ utilities.
 %if 0%{?fedora}
   -Ddistributor_logo=%{_datadir}/pixmaps/fedora_logo_med.png \
   -Ddark_mode_distributor_logo=%{_datadir}/pixmaps/fedora_whitelogo_med.png \
-  -Dmalcontent=true \
 %endif
 %if 0%{?rhel}
   -Ddistributor_logo=%{_datadir}/pixmaps/fedora-logo.png \
@@ -200,7 +194,6 @@ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gnome-control-center
 %{_datadir}/gnome-control-center/keybindings/*.xml
 %{_datadir}/gnome-control-center/pixmaps
 %{_datadir}/gnome-shell/search-providers/gnome-control-center-search-provider.ini
-%{_datadir}/icons/*
 %{_datadir}/icons/hicolor/*/*/*
 %{_datadir}/man/man1/gnome-control-center.1*
 %{_datadir}/metainfo/gnome-control-center.appdata.xml
@@ -219,27 +212,8 @@ chrpath --delete $RPM_BUILD_ROOT%{_bindir}/gnome-control-center
 %dir %{_datadir}/gnome/wm-properties
 
 %changelog
-* Sat Sep 18 2021 Kalev Lember <klember@redhat.com> - 41.0-1
-- Update to 41.0
-
-* Wed Sep 08 2021 Michael Catanzaro <mcatanzaro@redhat.com> - 41~rc1-1
-- Update to 41.rc1
-
-* Thu Aug 26 2021 Bastien Nocera <bnocera@redhat.com> - 41~beta-3
-+ gnome-control-center-41~beta-3
-- Parental controls fixes
-
-* Tue Aug 24 2021 Kalev Lember <klember@redhat.com> - 41~beta-2
-- Require malcontent and malcontent-control for parental controls support
-
-* Mon Aug 23 2021 Michael Catanzaro <mcatanzaro@redhat.com> - 41~beta-1
-- Update to 41.beta
-
-* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 40.0-11
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
-
-* Tue Jun 01 2021 Felipe Borges <feborges@redhat.com> - 40.0-10
-- Enable parental controls (malcontent)
+* Sat Sep 18 2021 Kalev Lember <klember@redhat.com> - 40.1-1
+- Update to 40.1
 
 * Fri Apr 02 2021 Kalev Lember <klember@redhat.com> - 40.0-9
 - Only enable power-profiles-daemon on F35+ and RHEL 9+
